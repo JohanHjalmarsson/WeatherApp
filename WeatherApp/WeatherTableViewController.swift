@@ -1,38 +1,34 @@
 //
-//  JHTableViewController.swift
+//  WeatherTableViewController.swift
 //  WeatherApp
 //
-//  Created by lösen är 0000 on 2018-03-05.
+//  Created by Johan Hjalmarsson on 2018-03-21.
 //  Copyright © 2018 Johan Hjalmarsson. All rights reserved.
 //
 
 import UIKit
 
-class JHTableViewController: UITableViewController, WeatherProviderDelegate {
-    //var provider = WeatherProvider()
-    var favList : [String] = []
-    var weatherList : [Weather] = []
-    var weatherProvider : WeatherProvider!
+class WeatherTableViewController: UITableViewController, WeatherProviderDelegate{
+    var cityName : String = ""
+    var list : [Weather] = []
+    var weatherProvider: WeatherProvider!
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         weatherProvider = WeatherProvider(delegate: self)
-    
-    }
-    
-    var shouldUseWeatherList : Bool {
-        if weatherList.isEmpty {
-            return false
-        } else {
-            return true
-        }
+        weatherProvider.getWeatherByCity(city: cityName)
+
+        // Uncomment the following line to preserve selection between presentations
+        // self.clearsSelectionOnViewWillAppear = false
+
+        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+        // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
     
     func didGetWeather(weather: Weather) {
         DispatchQueue.main.async {
-           // self.list.append(weather)
-           // self.tableView.reloadData()
+            self.list.append(weather)
+            self.tableView.reloadData()
         }
     }
     
@@ -54,31 +50,22 @@ class JHTableViewController: UITableViewController, WeatherProviderDelegate {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        //return self.list.count
-        if shouldUseWeatherList {
-            return weatherList.count
-        } else {
-            return favList.count
-        }
+        return list.count
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //let cell = tableView.dequeueReusableCell(withIdentifier: "JHCell", for: indexPath)
-        //let cell: WeatherCell = self.tableView.dequeueReusableCell(withIdentifier: "JHCell", for: indexPath)
-        let cell: WeatherCell = self.tableView.dequeueReusableCell(withIdentifier: "JHCell") as! WeatherCell
+        let cell: AnotherWeatherCell = self.tableView.dequeueReusableCell(withIdentifier: "SearchDisplayCell") as! AnotherWeatherCell
         
-        //cell.textLabel?.text = self.list[indexPath.row]
-//        cell.labelLeft.text = self.list[indexPath.row]["City"]
-//        cell.laberlRight.text = self.list[indexPath.row]["Weather"]
-        
-        if shouldUseWeatherList {
-            cell.labelLeft.text = weatherList[indexPath.row].name
-            cell.laberlRight.text = String(describing: weatherList[indexPath.row].main.temp)
+        if (!list.isEmpty) {
+            let array : [String] = weatherProvider.getWeatherInfoArray(weather: list[indexPath.row])
+            cell.labelLeft.text = array[0]
+            cell.labelRight.text = array[1]
         } else {
-            cell.labelLeft.text = favList[indexPath.row]
+            cell.labelLeft.text = "loading"
         }
-
+        
+    
         return cell
     }
     
@@ -109,7 +96,6 @@ class JHTableViewController: UITableViewController, WeatherProviderDelegate {
 
     }
     */
-    
 
     /*
     // Override to support conditional rearranging of the table view.
@@ -119,33 +105,19 @@ class JHTableViewController: UITableViewController, WeatherProviderDelegate {
     }
     */
 
-    /*
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     
         if (segue.identifier == "Detail") {
             let destination = segue.destination as! DetailViewController,
             rowIndex = tableView.indexPathForSelectedRow!.row
-            
-            if let city = self.list[rowIndex]["City"] {
-                destination.cityName = city
-                destination.title = city
-            }
-            if let weather = self.list[rowIndex]["Weather"] {
-                destination.weather = weather
-            }
-            
-            
-            
-            
-            
+            destination.weatherInfo = weatherProvider.getWeatherInfoArray(weather: list[rowIndex])
         }
-        
-    }
- 
-    */
+     
+     }
  
 
 }

@@ -10,14 +10,14 @@ import UIKit
 
 class MainViewController: UIViewController {
     
-    var weatherProvider = WeatherProvider()
+    //var weatherProvider = WeatherProvider()
     @IBOutlet weak var navBar: UINavigationItem!
     @IBOutlet weak var tempLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.tintColor = UIColor.black
-        setData()
+        //setData()
 
         // Do any additional setup after loading the view.
     }
@@ -27,10 +27,10 @@ class MainViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    func setData() {
-        navBar.title = weatherProvider.getFavCityName()
-        tempLabel.text = weatherProvider.getFavCityWeather()
-    }
+//    func setData() {
+//        navBar.title = weatherProvider.getFavCityName()
+//        tempLabel.text = weatherProvider.getFavCityWeather()
+//    }
     
 
     /*
