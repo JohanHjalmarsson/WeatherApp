@@ -13,8 +13,10 @@ class DetailViewController: UIViewController {
     var weatherInfo : [String] = []
     var uiArray : [UIView] = []
 
-    @IBOutlet weak var label: UILabel!
-    @IBOutlet weak var weatherLabel: UILabel!
+    @IBOutlet weak var weatherImageView: UIImageView!
+    @IBOutlet weak var tempLabel: UILabel!
+    @IBOutlet weak var descriptionLabel: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpUi()
@@ -30,8 +32,10 @@ class DetailViewController: UIViewController {
     }
     
     func setUpUi() {
-        label.text = weatherInfo[0]
-        weatherLabel.text = weatherInfo[2]
+        navigationController?.title = weatherInfo[0]
+        tempLabel.text = weatherInfo[1]
+        descriptionLabel.text = weatherInfo[2]
+        weatherImageView.image = UIImage(named: weatherInfo[3])
     }
     
 

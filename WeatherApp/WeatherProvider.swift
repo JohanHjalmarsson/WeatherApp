@@ -57,6 +57,17 @@ class WeatherProvider {
         userDefaults.set(city, forKey: favCityKey)
     }
     
+    func isFavoriteCity(city: String) -> Bool {
+        var b : Bool = false
+        for i in 0...favoriteList.count {
+            if city == favoriteList[i] {
+                b = true
+                break
+            }
+        }
+        return b
+    }
+    
     func getWeatherByCity(city: String) {
         sendWeatherRequest(city: city)
     }
@@ -71,8 +82,8 @@ class WeatherProvider {
         }
         // Temp [1]
         if let temp = weather.main.temp {
-            let celsius = temp-274.15
-            let tempString = celsius.description
+            let celsius : Int = Int(temp-274.15)
+            let tempString = "\(celsius.description) °"
             array.append(tempString)
         }
         else {
