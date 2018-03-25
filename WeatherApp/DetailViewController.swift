@@ -8,45 +8,84 @@
 
 import UIKit
 
-class DetailViewController: UIViewController {
+class DetailViewController: UIViewController, WeatherProviderDelegate {
     
+    var city : String = ""
     var weatherInfo : [String] = []
     var uiArray : [UIView] = []
+    var weatherProvider : WeatherProvider!
+    var shouldRequestData : Bool = false
+    var clothingProvider : ClothingProvider!
+    var useWeather : Weather!
 
     @IBOutlet weak var weatherImageView: UIImageView!
     @IBOutlet weak var tempLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
+    @IBOutlet weak var heartButton: UIButton!
+    @IBOutlet weak var clothingView: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpUi()
-        
-        
-
-        // Do any additional setup after loading the view.
+        weatherProvider = WeatherProvider(delegate: self)
+        clothingProvider = ClothingProvider()
+        if shouldRequestData {
+            weatherProvider.getWeatherByCity(city: city)
+        } else {
+            setUpUi()
+            setUpClothing(imageArray: clothingProvider.getAppClothes(weather: useWeather))
+        }
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
+    func didGetWeather(weather: Weather) {
+        DispatchQueue.main.async {
+            self.weatherInfo = self.weatherProvider.getWeatherInfoArray(weather: weather)
+            self.setUpUi()
+            self.setUpClothing(imageArray: self.clothingProvider.getAppClothes(weather: weather))
+        }
+    }
+    
+    func didNotGetWeather(error: NSError) {}
+    
     func setUpUi() {
-        navigationController?.title = weatherInfo[0]
+        title = weatherInfo[0]
         tempLabel.text = weatherInfo[1]
         descriptionLabel.text = weatherInfo[2]
         weatherImageView.image = UIImage(named: weatherInfo[3])
+        heartButton.setBackgroundImage(UIImage(named: weatherProvider.heartImagePath(city: weatherInfo[0])), for: UIControlState.normal)
+    }
+    
+    // Fundera på att sätta denna i ClothingProvider och endast returnera en view
+    func setUpClothing(imageArray: [UIImage]) {
+        let imageCount = CGFloat(imageArray.count+1)
+        var imageSize : CGFloat {
+            if clothingView.frame.size.width/imageCount > 50 {
+                return CGFloat(50)
+            } else {
+                return CGFloat(clothingView.frame.size.width/imageCount)
+            }
+        }
+        for i in 0...imageArray.count-1 {
+            let i2 = CGFloat(i)
+            let x = clothingView.frame.size.width/imageCount*i2
+            print(imageArray[i])
+            let imageView = UIImageView(image: imageArray[i])
+            imageView.frame = CGRect(x: x, y: 0, width: imageSize, height: imageSize)
+            clothingView.addSubview(imageView)
+        }
     }
     
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    @IBAction func heartButtonClicked(_ sender: Any) {
+        if weatherProvider.isFavoriteCity(city: weatherInfo[0]) {
+            weatherProvider.removeCityFromFavoriteList(city: weatherInfo[0])
+        } else {
+            weatherProvider.addCityToFavoriteList(city: weatherInfo[0])
+        }
+        heartButton.setBackgroundImage(UIImage(named: weatherProvider.heartImagePath(city: weatherInfo[0])), for: UIControlState.normal)
     }
-    */
 
 }

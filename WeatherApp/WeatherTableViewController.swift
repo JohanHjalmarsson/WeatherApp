@@ -8,33 +8,74 @@
 
 import UIKit
 
-class WeatherTableViewController: UITableViewController, WeatherProviderDelegate{
-    var cityName : String = ""
-    var list : [Weather] = []
-    var weatherProvider: WeatherProvider!
+class WeatherTableViewController: UITableViewController, UISearchResultsUpdating {
+   
+    
+    //var cityName : String = ""
+    //var list : [Weather] = []
+    //var weatherProvider: WeatherProvider!
+    var list : [WeatherLocationItem] = []
+    var searchResults : [WeatherLocationItem] = []
+    
+    
+    
+    var theSearchController : UISearchController!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        weatherProvider = WeatherProvider(delegate: self)
-        weatherProvider.getWeatherByCity(city: cityName)
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+       // weatherProvider = WeatherProvider(delegate: self)
+       // weatherProvider.getWeatherByCity(city: cityName)
+        
+        definesPresentationContext = true
+        
+        theSearchController = UISearchController(searchResultsController: nil)
+        theSearchController.searchResultsUpdater = self
+        theSearchController.dimsBackgroundDuringPresentation = false
+        
+        navigationItem.searchController = theSearchController
+        
+        //let mainVC : MainViewController = MainViewController()
+        //list = mainVC.allCitiesIntheHoleWorldList
+        
+        
+        
     }
     
-    func didGetWeather(weather: Weather) {
-        DispatchQueue.main.async {
-            self.list.append(weather)
-            self.tableView.reloadData()
+    override func viewDidAppear(_ animated: Bool) {
+        theSearchController.searchBar.becomeFirstResponder()
+    }
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        if let userInput = searchController.searchBar.text?.lowercased() {
+            searchResults = list.filter({ $0.name!.lowercased().contains(userInput) })
+        } else {
+            searchResults = []
+        }
+        tableView.reloadData()
+    }
+    
+    var shouldUseSearchResult : Bool {
+        if let text = theSearchController.searchBar.text {
+            if text.isEmpty {
+                return false
+            } else {
+                return theSearchController.isActive
+            }
+        } else {
+            return false
         }
     }
     
-    func didNotGetWeather(error: NSError) {
-        print(error)
-    }
+//    func didGetWeather(weather: Weather) {
+//        DispatchQueue.main.async {
+//            self.list.append(weather)
+//            self.tableView.reloadData()
+//        }
+//    }
+    
+//    func didNotGetWeather(error: NSError) {
+//        print(error)
+//    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -50,22 +91,24 @@ class WeatherTableViewController: UITableViewController, WeatherProviderDelegate
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return list.count
+        if shouldUseSearchResult {
+            return searchResults.count
+        } else {
+            return 0
+        }
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: AnotherWeatherCell = self.tableView.dequeueReusableCell(withIdentifier: "SearchDisplayCell") as! AnotherWeatherCell
-        
-        if (!list.isEmpty) {
-            let array : [String] = weatherProvider.getWeatherInfoArray(weather: list[indexPath.row])
-            cell.labelLeft.text = array[0]
-            cell.labelRight.text = array[1]
+        let array : [WeatherLocationItem]
+        if shouldUseSearchResult {
+            array = searchResults
         } else {
-            cell.labelLeft.text = "loading"
+            array = []
         }
-        
-    
+        cell.labelLeft.text = array[indexPath.row].name
+        cell.labelRight.text = ""
         return cell
     }
     
@@ -114,7 +157,8 @@ class WeatherTableViewController: UITableViewController, WeatherProviderDelegate
         if (segue.identifier == "Detail") {
             let destination = segue.destination as! DetailViewController,
             rowIndex = tableView.indexPathForSelectedRow!.row
-            destination.weatherInfo = weatherProvider.getWeatherInfoArray(weather: list[rowIndex])
+            destination.shouldRequestData = true
+            destination.city = searchResults[rowIndex].name!
         }
      
      }

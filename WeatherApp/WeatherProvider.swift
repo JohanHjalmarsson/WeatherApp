@@ -18,6 +18,11 @@ struct Weather : Codable {
     let id : Int?
     let main : OwMain
     let weather : [OwWeather]
+    let wind : WindInfo
+    
+    struct WindInfo : Codable {
+        let speed : Float?
+    }
     
     struct OwMain : Codable {
         let temp : Float?
@@ -36,7 +41,7 @@ class WeatherProvider {
     private var delegate : WeatherProviderDelegate
     
     private let openWeatherMapBaseURL = "http://api.openweathermap.org/data/2.5/weather"
-    private let openWeatherMapAPIKey = "f1fe503eba89cad6f7057dcadc66c81c"
+    private let openWeatherMapAPIKey = "53b99e377fd99bcc794ffa8a719713b1"
     
     private let userDefaults : UserDefaults
     private let favCityKey : String = "favCity"
@@ -52,15 +57,15 @@ class WeatherProvider {
             favoriteList = []
         }
     }
-    
+
     func setFavoriteCity(city: String) {
         userDefaults.set(city, forKey: favCityKey)
     }
     
     func isFavoriteCity(city: String) -> Bool {
         var b : Bool = false
-        for i in 0...favoriteList.count {
-            if city == favoriteList[i] {
+        for i in favoriteList {
+            if city == i {
                 b = true
                 break
             }
@@ -119,16 +124,31 @@ class WeatherProvider {
         userDefaults.set(favoriteList, forKey: favListKey)
     }
     
+    func removeCityFromFavoriteList(city: String) {
+        for i in 0...favoriteList.count {
+            if city == favoriteList[i] {
+                favoriteList.remove(at: i)
+            }
+        }
+        userDefaults.set(favoriteList, forKey: favListKey)
+    }
+    
     func getFavoriteList() -> [String] {
         return favoriteList
+    }
+    
+    func heartImagePath(city: String) -> String {
+        if isFavoriteCity(city: city) {
+            return "heartFilled"
+        } else {
+            return "heart"
+        }
     }
 
     
     private func sendWeatherRequest(city: String) {
-        //if let safeString = searchField.text!.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-        if let url = URL(string: "https://api.openweathermap.org/data/2.5/weather?q=\(city)&APPID=f1fe503eba89cad6f7057dcadc66c81c") {
-            //
-            // behöver ingen if let, för den funkar alltid om den får en url
+        if let safeString = city.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+        let url = URL(string: "http://api.openweathermap.org/data/2.5/weather?q=\(safeString)&APPID=\(openWeatherMapAPIKey)") {
             let request = URLRequest(url: url)
             let task = URLSession.shared.dataTask(with: request, completionHandler:
             { (data : Data?, response : URLResponse?, error : Error?) in
@@ -136,41 +156,23 @@ class WeatherProvider {
                     print(actualError)
                 } else {
                     if let actualData = data {
-                        print(actualData)
                         let decoder = JSONDecoder()
-                        print(decoder)
                         do {
                             let weather = try decoder.decode(Weather.self, from: actualData)
-                            print(weather)
-                            
                             self.delegate.didGetWeather(weather: weather)
-//                            DispatchQueue.main.async {
-//                              print("Name "+weather.name!)
-//                                print("id "+String(weather.id!))
-//                                print("Temp "+String(weather.main.temp!))
-//                                print("Description "+weather.weather[0].description!)
-//                            }
-                            
                         } catch let e {
                             print("Error parsing json: \(e)")
                         }
-                        
                     } else {
                         print("Data was nil")
                     }
                 }
-                
-                
             })
-            
             task.resume()
-            print("Sending request!")
-            
         }else {
             print("Bad url string.")
         }
     }
-    
-    
+
     
 }
