@@ -42,6 +42,7 @@ class WeatherTableViewController: UITableViewController, UISearchResultsUpdating
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         theSearchController.searchBar.becomeFirstResponder()
     }
     
