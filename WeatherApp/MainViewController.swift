@@ -13,12 +13,14 @@ class MainViewController: UIViewController, WeatherProviderDelegate, WeatherLoca
     
     @IBOutlet weak var navBar: UINavigationItem!
     @IBOutlet weak var tempLabel: UILabel!
-    @IBOutlet weak var searchItem: UIBarButtonItem!
-    @IBOutlet weak var favoriteItem: UIBarButtonItem!
+    //@IBOutlet weak var searchItem: UIBarButtonItem!
+    //@IBOutlet weak var favoriteItem: UIBarButtonItem!
     @IBOutlet weak var clothingView: UIView!
     @IBOutlet weak var indicatorView: UIActivityIndicatorView!
     @IBOutlet weak var weatherImageView: UIImageView!
     @IBOutlet weak var descriptionLabel: UILabel!
+    @IBOutlet weak var favMenuButton: UIButton!
+    @IBOutlet weak var searchMenuButton: UIButton!
     
     var weatherProvider : WeatherProvider!
     var hasLoadedWeather : Bool = false
@@ -36,6 +38,8 @@ class MainViewController: UIViewController, WeatherProviderDelegate, WeatherLoca
         hideOrShowUi(state: true)
         weatherProvider.getFavoriteCity()
         clotingProvider = ClothingProvider()
+        setUpButton(button: favMenuButton, imageName: "heartFilled");
+        setUpButton(button: searchMenuButton, imageName: "search")
       
     }
     
@@ -73,8 +77,8 @@ class MainViewController: UIViewController, WeatherProviderDelegate, WeatherLoca
         tempLabel.isHidden = state
         weatherImageView.isHidden = state
         descriptionLabel.isHidden = state
-        searchItem.isEnabled = !state
-        favoriteItem.isEnabled = !state
+//        searchItem.isEnabled = !state
+//        favoriteItem.isEnabled = !state
         if state {
             indicatorView.startAnimating()
         } else {
@@ -110,6 +114,19 @@ class MainViewController: UIViewController, WeatherProviderDelegate, WeatherLoca
             imageView.frame = CGRect(x: x, y: y, width: imageSize, height: imageSize)
             clothingView.addSubview(imageView)
         }
+    }
+    
+    func setUpButton(button: UIButton, imageName: String) {
+        button.layer.cornerRadius = favMenuButton.frame.size.height / 2
+        button.clipsToBounds = true
+        button.setImage(UIImage(named:imageName), for: .normal)
+        button.contentMode = UIViewContentMode.center
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOpacity = 0.7
+        button.layer.shadowOffset = CGSize.zero
+        button.layer.shadowRadius = 5
+        button.layer.masksToBounds = false
+        
     }
 
     override func didReceiveMemoryWarning() {

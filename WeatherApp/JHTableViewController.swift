@@ -78,8 +78,16 @@ class JHTableViewController: UITableViewController, WeatherProviderDelegate {
             cell.labelLeft.text = favList[indexPath.row]
             cell.laberlRight.text = "loading..."
         }
-
+        
+        
+        cell.backgroundColor = (indexPath.row % 2 == 0) ? UIColor(red: 224/255, green: 137/255, blue: 177/255, alpha: 1) : UIColor(red: 58/255, green: 51/255, blue: 81/255, alpha: 1)
+        cell.labelLeft.textColor = (indexPath.row % 2 == 0) ? UIColor.black : UIColor.white
+        cell.laberlRight.textColor = (indexPath.row % 2 == 0) ? UIColor.black : UIColor.white
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 90.0;
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
