@@ -257,8 +257,8 @@
                             <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LIy-mE-gee">
                                 <rect key="frame" x="0.0" y="84" width="414" height="216"/>
                             </pickerView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="50Y-RV-fIa">
-                                <rect key="frame" x="160" y="340" width="94" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="50Y-RV-fIa">
+                                <rect key="frame" x="100" y="340" width="214" height="45"/>
                                 <color key="backgroundColor" red="0.30420844549999998" green="0.22124088080000001" blue="0.52163309010000003" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Compare">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -270,11 +270,11 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="0.61267649449999995" blue="0.72215101240000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
-                            <constraint firstItem="Agm-61-qoB" firstAttribute="trailing" secondItem="50Y-RV-fIa" secondAttribute="trailing" constant="160" id="7Ft-Dk-M3A"/>
                             <constraint firstItem="LIy-mE-gee" firstAttribute="trailing" secondItem="Agm-61-qoB" secondAttribute="trailing" id="BBR-fo-mMh"/>
                             <constraint firstItem="LIy-mE-gee" firstAttribute="top" secondItem="Agm-61-qoB" secondAttribute="top" constant="20" id="DOO-TH-rgf"/>
-                            <constraint firstItem="50Y-RV-fIa" firstAttribute="leading" secondItem="Agm-61-qoB" secondAttribute="leading" constant="160" id="HIe-pQ-LkV"/>
+                            <constraint firstItem="Agm-61-qoB" firstAttribute="trailing" secondItem="50Y-RV-fIa" secondAttribute="trailing" constant="100" id="J69-Or-4gi"/>
                             <constraint firstItem="50Y-RV-fIa" firstAttribute="top" secondItem="LIy-mE-gee" secondAttribute="bottom" constant="40" id="RiL-Vo-Gs6"/>
+                            <constraint firstItem="50Y-RV-fIa" firstAttribute="leading" secondItem="Agm-61-qoB" secondAttribute="leading" constant="100" id="jVN-EW-AAH"/>
                             <constraint firstItem="LIy-mE-gee" firstAttribute="leading" secondItem="Agm-61-qoB" secondAttribute="leading" id="w8m-2K-AoF"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Agm-61-qoB"/>
@@ -285,7 +285,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QLD-s4-mcg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="987" y="1045"/>
+            <point key="canvasLocation" x="986.95652173913049" y="1044.2934782608697"/>
         </scene>
         <!--Compare Cities View Controller-->
         <scene sceneID="RbO-JZ-Fxe">

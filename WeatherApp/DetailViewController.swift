@@ -90,7 +90,7 @@ class DetailViewController: UIViewController, WeatherProviderDelegate {
             }
         }
         let remainingWidth = clothingView.frame.size.width-(imageSize*imageCount)
-        for i in 0...imageArray.count-1 {
+        for i in 0..<imageArray.count {
             let i2 = CGFloat(i)
             let x = clothingView.frame.size.width/imageCount*i2+(remainingWidth/2)
             let y = clothingView.frame.size.height/2-(imageSize/2)

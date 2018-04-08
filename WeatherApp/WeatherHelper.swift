@@ -22,7 +22,11 @@ class WeatherHelper {
     func getScaleForTemp(list: [Weather]) -> [Int]{
         var array : [Double] = []
         for weather in list {
-            array.append(Double(getCelsius(weather: weather))+50)
+            var temp = Double(getCelsius(weather: weather))
+            if temp == 0 {
+                temp = 1
+            }
+            array.append(temp)
         }
         if let max = array.max() {
             for i in 0..<array.count {

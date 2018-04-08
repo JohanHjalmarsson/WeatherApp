@@ -21,7 +21,7 @@ class ClothingProvider {
                 print("no temperature")
             }
         
-        if weather.wind.speed! > 6 || celsius < 10 || weather.weather[0].main == "Snow" {
+        if weather.wind.speed! > 6 || celsius <= 10 || weather.weather[0].main == "Snow" {
             let image = UIImage(named: "coldC")
             array.append(image!)
             print("coldC added")

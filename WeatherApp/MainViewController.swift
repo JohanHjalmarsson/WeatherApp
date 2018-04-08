@@ -61,6 +61,7 @@ class MainViewController: UIViewController, WeatherProviderDelegate, WeatherLoca
     
     func didGetWeather(weather: Weather) {
         DispatchQueue.main.async {
+            print("Weather recieved")
             self.setUpUi(weather: self.weatherProvider.getWeatherInfoArray(weather: weather))
             self.setUpClothing(imageArray: self.clotingProvider.getAppClothes(weather: weather))
             self.hasLoadedWeather = true
@@ -82,6 +83,7 @@ class MainViewController: UIViewController, WeatherProviderDelegate, WeatherLoca
     
     func didGetWeatherLocations(list: [WeatherLocationItem]) {
         DispatchQueue.main.async {
+            print("city.list.json parsed")
             self.allCitiesIntheHoleWorldList = list
             self.hasLoadedList = true
             if self.hasLoadedWeather {
@@ -132,7 +134,7 @@ class MainViewController: UIViewController, WeatherProviderDelegate, WeatherLoca
                 return CGFloat(clothingView.frame.size.width/imageCount)
             }
         }
-        for i in 0...imageArray.count-1 {
+        for i in 0..<imageArray.count {
             let i2 = CGFloat(i)
             let y = clothingView.frame.size.height/imageCount*i2
             let x = clothingView.frame.size.width/(CGFloat(2))-imageSize/2
