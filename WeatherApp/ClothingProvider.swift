@@ -47,43 +47,4 @@ class ClothingProvider {
         }
         return array
     }
-    
-    
-//    func getMoodOfBaby(weather: Weather) -> String {
-//
-//
-//        var celsius : Int
-//        if let temp = weather.main.temp {
-//            celsius = Int(temp-274.15)
-//        } else {
-//            celsius = 0
-//            print("no temperature")
-//        }
-//
-//        let lullWind  = weather.wind.speed! <= 1
-//        let averageWind = weather.wind.speed! > 2 && weather.wind.speed! < 5
-//        let hardWind = weather.wind.speed! >= 5 && weather.wind.speed! < 7
-//        let stormWind = weather.wind.speed! <= 7
-//
-//        let sunShine = weather.weather[0].main == "Clear"
-//        let rain = weather.weather[0].main == "Rain"
-//        let thunderStorm = weather.weather[0].main == "ThunderStorm"
-//        let lightRain = weather.weather[0].main == "Drizzle"
-//        let snow = weather.weather[0].main == "Snow"
-//        let clouds = weather.weather[0].main == "Clouds"
-//
-//        let coldTemp = celsius < 5
-//        let averageTemp = celsius >= 5 && celsius < 15
-//        let varmTemp = celsius >= 15 && celsius < 25
-//        let veryHot = celsius >= 25
-//
-//
-//        if (lullWind && clouds && !veryHot) ||
-//            (lullWind && lightRain && !veryHot && !coldTemp)
-//            {
-//            return "happyBaby"
-//        }
-//        return "happy"
-//    }
-
 }

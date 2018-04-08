@@ -110,12 +110,20 @@ class WeatherProvider {
         }
         return array
     }
+    func getNameAndTempArray(list: [Weather]) ->[String:[String]] {
+        var dict : [String:[String]] = [:]
+        for weather in list {
+            dict[weather.name!] = getWeatherInfoArray(weather: weather)
+        }
+        return dict
+    }
     
     func getFavoriteCity() {
-        if let city = userDefaults.string(forKey: favCityKey) {
-            sendWeatherRequest(city: city)
+        let random : Int = Int(arc4random_uniform(UInt32(favoriteList.count)))
+        if favoriteList.count > 0 {
+            sendWeatherRequest(city: favoriteList[random])
         } else {
-            sendWeatherRequest(city: "london")
+            sendWeatherRequest(city: "gothenburg")
         }
     }
     
@@ -125,9 +133,10 @@ class WeatherProvider {
     }
     
     func removeCityFromFavoriteList(city: String) {
-        for i in 0...favoriteList.count {
+        for i in 0..<favoriteList.count {
             if city == favoriteList[i] {
                 favoriteList.remove(at: i)
+                break;
             }
         }
         userDefaults.set(favoriteList, forKey: favListKey)
@@ -144,8 +153,13 @@ class WeatherProvider {
             return "heart"
         }
     }
-
     
+    func getBackgroundImage() -> String {
+        let array = ["town","town2","town3","town4"]
+        let i : Int = Int(arc4random_uniform(4))
+        return array[i]
+    }
+
     private func sendWeatherRequest(city: String) {
         if let safeString = city.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
         let url = URL(string: "http://api.openweathermap.org/data/2.5/weather?q=\(safeString)&APPID=\(openWeatherMapAPIKey)") {

@@ -7,40 +7,52 @@
 //
 
 import UIKit
+import NVActivityIndicatorView
 
 
 class MainViewController: UIViewController, WeatherProviderDelegate, WeatherLocationsDelegate {
     
     @IBOutlet weak var navBar: UINavigationItem!
     @IBOutlet weak var tempLabel: UILabel!
-    //@IBOutlet weak var searchItem: UIBarButtonItem!
-    //@IBOutlet weak var favoriteItem: UIBarButtonItem!
     @IBOutlet weak var clothingView: UIView!
-    @IBOutlet weak var indicatorView: UIActivityIndicatorView!
     @IBOutlet weak var weatherImageView: UIImageView!
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var favMenuButton: UIButton!
     @IBOutlet weak var searchMenuButton: UIButton!
+    @IBOutlet weak var customIndicator: NVActivityIndicatorView!
+    @IBOutlet weak var mainView: UILabel!
+    @IBOutlet weak var backgroundView: UIImageView!
     
     var weatherProvider : WeatherProvider!
     var hasLoadedWeather : Bool = false
     var hasLoadedList : Bool = false
     var clotingProvider : ClothingProvider!
     var allCitiesIntheHoleWorldList : [WeatherLocationItem] = []
+    var viewArray : [UIView] = []
+    var timerInited : Bool = false
+    var timer : Timer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         weatherProvider = WeatherProvider(delegate: self)
         let weatherLocations = WeatherLocations(delegate: self)
         weatherLocations.parseJson()
-        self.navigationController?.navigationBar.tintColor = UIColor.black
+        self.navigationController?.navigationBar.tintColor = UIColor.white
         navBar.title = "Weather App"
         hideOrShowUi(state: true)
         weatherProvider.getFavoriteCity()
         clotingProvider = ClothingProvider()
         setUpButton(button: favMenuButton, imageName: "heartFilled");
         setUpButton(button: searchMenuButton, imageName: "search")
-      
+        viewArray = [weatherImageView, clothingView, descriptionLabel, tempLabel, favMenuButton, searchMenuButton]
+        setBackgroundImage()
+    }
+    
+    func startTimer() {
+        timerInited = true
+        timer = Timer.scheduledTimer(withTimeInterval: 6.0, repeats: true, block: { (timer) in
+           self.weatherProvider.getFavoriteCity()
+        })
     }
     
     func getAllCitiesInTheHoleWorld() -> [WeatherLocationItem] {
@@ -49,11 +61,11 @@ class MainViewController: UIViewController, WeatherProviderDelegate, WeatherLoca
     
     func didGetWeather(weather: Weather) {
         DispatchQueue.main.async {
-           self.setUpUi(weather: self.weatherProvider.getWeatherInfoArray(weather: weather))
+            self.setUpUi(weather: self.weatherProvider.getWeatherInfoArray(weather: weather))
             self.setUpClothing(imageArray: self.clotingProvider.getAppClothes(weather: weather))
             self.hasLoadedWeather = true
             if self.hasLoadedList {
-                self.hideOrShowUi(state: false)
+                self.afterWeatherOrList()
             }
         }
     }
@@ -61,29 +73,45 @@ class MainViewController: UIViewController, WeatherProviderDelegate, WeatherLoca
     func didNotGetWeather(error: NSError) {
         print(error)
     }
+    func afterWeatherOrList() {
+        if !timerInited {
+            startTimer()
+            hideOrShowUi(state: false)
+        }
+    }
     
     func didGetWeatherLocations(list: [WeatherLocationItem]) {
         DispatchQueue.main.async {
             self.allCitiesIntheHoleWorldList = list
             self.hasLoadedList = true
             if self.hasLoadedWeather {
-                self.hideOrShowUi(state: false)
             }
         }
     }
     func didNotGetWeatherLocations(error: NSError) {}
     
     func hideOrShowUi(state: Bool) {
-        tempLabel.isHidden = state
+
         weatherImageView.isHidden = state
+        clothingView.isHidden = state
         descriptionLabel.isHidden = state
-//        searchItem.isEnabled = !state
-//        favoriteItem.isEnabled = !state
+        tempLabel.isHidden = state
+        favMenuButton.isHidden = state
+        searchMenuButton.isHidden = state
+        
+        weatherImageView.alpha = 0
+        clothingView.alpha = 0
+        descriptionLabel.alpha = 0
+        tempLabel.alpha = 0
+        favMenuButton.alpha = 0
+        searchMenuButton.alpha = 0
+        
         if state {
-            indicatorView.startAnimating()
+           customIndicator.startAnimating()
         } else {
-            indicatorView.stopAnimating()
-            indicatorView.isHidden = true
+           customIndicator.stopAnimating()
+           customIndicator.isHidden = true
+            animateStuff()
         }
     }
     
@@ -93,9 +121,9 @@ class MainViewController: UIViewController, WeatherProviderDelegate, WeatherLoca
         descriptionLabel.text = weather[2]
         weatherImageView.image = UIImage(named: weather[3])
     }
+    
     // Fundera på att sätta denna i ClothingProvider och endast returnera en view
     func setUpClothing(imageArray: [UIImage]) {
-        print("set up cloth")
         let imageCount = CGFloat(imageArray.count+1)
         var imageSize : CGFloat {
             if clothingView.frame.size.width/imageCount > 50 {
@@ -105,7 +133,6 @@ class MainViewController: UIViewController, WeatherProviderDelegate, WeatherLoca
             }
         }
         for i in 0...imageArray.count-1 {
-            print("clothes: ",i)
             let i2 = CGFloat(i)
             let y = clothingView.frame.size.height/imageCount*i2
             let x = clothingView.frame.size.width/(CGFloat(2))-imageSize/2
@@ -128,10 +155,43 @@ class MainViewController: UIViewController, WeatherProviderDelegate, WeatherLoca
         button.layer.masksToBounds = false
         
     }
+    
+    func setBackgroundImage() {
+        backgroundView.image = UIImage(named: weatherProvider.getBackgroundImage())
+    }
+    
+    func animateStuff() {
+        var delay : Double = 0.0
+        for view in viewArray {
+            UIView.animate(withDuration: 0.3, delay: delay, animations: {
+                view.alpha = 1
+                view.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+            }) { (complete) in
+                let completeDelay = (view == self.favMenuButton || view == self.searchMenuButton) ? 0.5 : 0.0
+                UIView.animate(withDuration: 0.5, delay: completeDelay, animations: {
+                    view.transform = CGAffineTransform.identity
+                })
+            }
+            delay = delay + 0.1
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: {
+            self.loopAnimation(view: self.weatherImageView)
+            print("kör!")
+        })
+    }
+    
+    func loopAnimation(view: UIView) {
+        UIView.animate(withDuration: 1.9,delay: 0, options: [.repeat, .autoreverse], animations: {
+            view.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
+        }) { (completion) in
+            UIView.animate(withDuration: 1.9, animations: {
+                view.transform = CGAffineTransform(scaleX: 1, y: 1)
+            }) 
+        }
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

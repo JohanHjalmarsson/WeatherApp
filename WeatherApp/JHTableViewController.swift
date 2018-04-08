@@ -14,7 +14,8 @@ class JHTableViewController: UITableViewController, WeatherProviderDelegate {
     var weatherList : [Weather] = []
     var weatherProvider : WeatherProvider!
     var weather : Weather!
-
+    var colorIndex : Int = 0
+    var colorIndexDirection : Bool = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,6 +36,7 @@ class JHTableViewController: UITableViewController, WeatherProviderDelegate {
         DispatchQueue.main.async {
            self.weatherList.append(weather)
             self.weather = weather
+            self.colorIndex = 0
            self.tableView.reloadData()
         }
     }
@@ -78,16 +80,36 @@ class JHTableViewController: UITableViewController, WeatherProviderDelegate {
             cell.labelLeft.text = favList[indexPath.row]
             cell.laberlRight.text = "loading..."
         }
-        
-        
-        cell.backgroundColor = (indexPath.row % 2 == 0) ? UIColor(red: 224/255, green: 137/255, blue: 177/255, alpha: 1) : UIColor(red: 58/255, green: 51/255, blue: 81/255, alpha: 1)
-        cell.labelLeft.textColor = (indexPath.row % 2 == 0) ? UIColor.black : UIColor.white
-        cell.laberlRight.textColor = (indexPath.row % 2 == 0) ? UIColor.black : UIColor.white
+        cell.backgroundColor = getCellColorTest(row: indexPath.row)
+        cell.labelLeft.textColor = UIColor.white
+        cell.laberlRight.textColor = UIColor.white
         return cell
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 90.0;
+    }
+    
+    func getCellColorTest(row: Int) -> UIColor {
+        let color1 = UIColor(red: 72/255, green: 65/255, blue: 96/255, alpha: 1)
+        let color2 = UIColor(red: 73/255, green: 68/255, blue: 93/255, alpha: 1)
+        let color3 = UIColor(red: 58/255, green: 54/255, blue: 72/255, alpha: 1)
+        let color4 = UIColor(red: 47/255, green: 44/255, blue: 55/255, alpha: 1)
+        let color5 = UIColor(red: 40/255, green: 39/255, blue: 45/255, alpha: 1)
+        let color6 = UIColor(red: 32/255, green: 31/255, blue: 34/255, alpha: 1)
+        
+        let array = [color1, color2, color3, color4, color5, color6]
+        
+        if colorIndex == 5 {
+            colorIndexDirection = false
+        }
+        if colorIndex == 0 {
+            colorIndexDirection = true
+        }
+        let color = array[colorIndex]
+        colorIndex = (colorIndexDirection) ? (colorIndex + 1) : (colorIndex - 1)
+      
+        return color
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -96,7 +118,12 @@ class JHTableViewController: UITableViewController, WeatherProviderDelegate {
             let destination = segue.destination as! DetailViewController,
             rowIndex = tableView.indexPathForSelectedRow!.row
             destination.weatherInfo = weatherProvider.getWeatherInfoArray(weather: weatherList[rowIndex])
-            destination.useWeather = weather
+            destination.useWeather = weatherList[rowIndex]
+        }
+        else if (segue.identifier == "Compare") {
+            let destination = segue.destination as! ChooseCompViewController
+            destination.cities = weatherList
+            
         }
     }
  
